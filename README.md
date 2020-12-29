@@ -11,5 +11,6 @@ Video
 This tutorial is explained in the below Youtube Video.<br>
 
 
-[![Watch the video](https://www.javainuse.com/MySQL-min.jpg)](https://youtu.be/fdn59oiWEyo)
+[![Watch the video](https://www.javainuse.com/spring-security-jwt-min.jpg)](https://youtu.be/fdn59oiWEyo)
+
 
