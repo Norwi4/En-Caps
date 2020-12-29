@@ -9,4 +9,7 @@ Using the Spring Boot RestTemplate as the client we will be performing the follo
 Video
 
 This tutorial is explained in the below Youtube Video.<br>
-https://youtu.be/fdn59oiWEyo</br>
+
+
+[![Watch the video](https://www.javainuse.com/MySQL-min.jpg)](https://youtu.be/fdn59oiWEyo)
+
