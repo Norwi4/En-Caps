@@ -6,13 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Device {
-
+public class Parameters {
     @JsonProperty("id")
     private Long Id;
 
-    @JsonProperty("parameters")
-    private List<Sensor> sensors;
+    @JsonProperty("values")
+    private List<Values> values;
 
     public Long getId() {
         return Id;
@@ -22,11 +21,11 @@ public class Device {
         Id = id;
     }
 
-    public List<Sensor> getSensors() {
-        return sensors;
+    public List<Values> getValues() {
+        return values;
     }
 
-    public void setSensors(List<Sensor> sensors) {
-        this.sensors = sensors;
+    public void setValues(List<Values> values) {
+        this.values = values;
     }
 }

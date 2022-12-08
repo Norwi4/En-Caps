@@ -1,4 +1,4 @@
-package com.javainuse.model;
+package com.javainuse.systemClient.model;
 
 public class User {
 

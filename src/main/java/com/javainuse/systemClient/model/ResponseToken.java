@@ -1,4 +1,4 @@
-package com.javainuse.model;
+package com.javainuse.systemClient.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
