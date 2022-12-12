@@ -32,19 +32,16 @@ public class Auth {
     PLKrepo plKrepo;
     private static final String AUTHENTICATION_URL = "https://api.owencloud.ru/v1/auth/open";
     private static final String HELLO_URL = "https://api.owencloud.ru/v1/device/index";
-    private static final String DEVICE_INFO = "https://api.owencloud.ru/v1/device/309227";
+    private static final String DEVICE_INFO = "https://api.owencloud.ru/v1/device/";
 
     private static final String last_data = "https://api.owencloud.ru/v1/parameters/last-data";
     HttpHeaders headers = new HttpHeaders();
 
-    private static final String CRON = "* * */1 * * *";
+    private static final Integer PLC_COUNT = 0;
     @Autowired
     private DevToDTO devToDTO;
 
 
-    /**
-     * Метод авторизации
-     */
     public void auth() {
 
         try {
@@ -60,12 +57,10 @@ public class Auth {
                     new HttpEntity<>( authRequest ),
                     new ParameterizedTypeReference<ResponseToken>(){}
             );
-            System.out.println(authResponse.getBody().getToken());
-            for (ChildCompanies companies : authResponse.getBody().getChildCompanies()) {
-                System.out.println(companies.getCompany_id());
-                System.out.println(companies.getName());
-            }
 
+            //System.out.println(authResponse.getBody().getToken());
+
+            plKrepo.saveChildCompanies(authResponse.getBody().getChildCompanies()); // сохранение подключенных компаний
 
             headers.add("Authorization", "Bearer " + authResponse.getBody().getToken());
 
@@ -76,25 +71,9 @@ public class Auth {
     }
 
     /**
-     * Метод получения подключенных датчиков к плк
-     */
-    // TODO: 08.12.2022 Сделать его адаптивным, а не строгим
-    public void getDeviceInfo() {
-        if (!headers.isEmpty()) {
-            ResponseEntity<Device> res = restTemplate.exchange(
-                    DEVICE_INFO,
-                    HttpMethod.POST,
-                    new HttpEntity<>( headers ),
-                    new ParameterizedTypeReference<Device>(){}
-            );
-            Device device = res.getBody();
-            deviceRepositoryPLC.saveSensor(device);
-        }
-
-    }
-
-    /**
-     * Метод получения информации об ПЛК
+     * Получение информации об подлюченных ПЛК к аккаутну
+     *
+     * company_id = 0, если ПЛК подключены к головному аккаунту
      */
     @Scheduled(fixedRate = 60000)
     public void get() {
@@ -103,12 +82,25 @@ public class Auth {
             ResponseEntity<List<PLC>> result = restTemplate.exchange(
                     HELLO_URL,
                     HttpMethod.POST,
-                    new HttpEntity<>("{\"company_id\" : 210742 }" ,headers ),
+                    new HttpEntity<>( headers ),
                     new ParameterizedTypeReference<List<PLC>>() {}
             );
             List<PLC> rates = result.getBody();
-            plKrepo.save(rates);
+            plKrepo.save(rates, "0");
             error(rates);
+
+            for (ChildCompanies childCompanies : plKrepo.getChildCompanies()) {
+                ResponseEntity<List<PLC>> resultCh = restTemplate.exchange(
+                        HELLO_URL,
+                        HttpMethod.POST,
+                        new HttpEntity<>("{\"company_id\" : " + childCompanies.getCompany_id() +" }" ,headers ),
+                        new ParameterizedTypeReference<List<PLC>>() {}
+                );
+                List<PLC> ratesCh = resultCh.getBody();
+                plKrepo.save(ratesCh, childCompanies.getCompany_id());
+                error(ratesCh);
+            }
+
         }
     }
 
@@ -121,9 +113,29 @@ public class Auth {
     }
 
     /**
-     * Метод получения значений с датчиков
+     * Получение информации об подлюченных датчиках к ПЛК
      */
-    // TODO: 08.12.2022 Сделать его адаптивным, а не строгим 
+    @Scheduled(initialDelay = 60100)
+    public void getDeviceInfo() {
+        if (!headers.isEmpty()) {
+
+            for (PLC plc : plKrepo.getPlcList()) {
+
+                ResponseEntity<Device> res = restTemplate.exchange(
+                        DEVICE_INFO + plc.getId().toString(),
+                        HttpMethod.POST,
+                        new HttpEntity<>( headers ),
+                        new ParameterizedTypeReference<Device>(){}
+                );
+
+                Device device = res.getBody();
+                deviceRepositoryPLC.saveSensor(device);
+            }
+
+        }
+
+    }
+
     @Scheduled(fixedRate = 60000)
     public void getValueFromDevice() {
 

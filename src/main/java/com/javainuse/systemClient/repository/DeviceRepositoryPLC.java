@@ -23,12 +23,11 @@ public class DeviceRepositoryPLC {
     public void save(List<ParametersDTO> deviceDTOS) {
         for (ParametersDTO deviceDTO : deviceDTOS) {
             jdbcTemplate.update("INSERT INTO parameters (device_id, timeInOven, value, codeError, format) VALUES(?,?,?,?,?)",
-                    new Object[]{
-                            deviceDTO.getDevice_id(),
-                            deviceDTO.getTimeInOven(),
-                            deviceDTO.getValue(),
-                            deviceDTO.getCodeError(),
-                            deviceDTO.getFormat()});
+                    deviceDTO.getDevice_id(),
+                    deviceDTO.getTimeInOven(),
+                    deviceDTO.getValue(),
+                    deviceDTO.getCodeError(),
+                    deviceDTO.getFormat());
         }
     }
 
@@ -45,14 +44,12 @@ public class DeviceRepositoryPLC {
                 type = "Параметр";
             }
             jdbcTemplate.update("INSERT INTO device (plc_id, device_id, code, category_id, name, type) VALUES (?,?,?,?,?,?)",
-                    new Object[]{
-                            devices.getId(),
-                            sensors.getId(),
-                            sensors.getCode(),
-                            sensors.getCategory_id(),
-                            sensors.getName(),
-                            type
-                    });
+                    devices.getId(),
+                    sensors.getId(),
+                    sensors.getCode(),
+                    sensors.getCategory_id(),
+                    sensors.getName(),
+                    type);
         }
     }
 }
