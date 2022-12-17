@@ -37,7 +37,6 @@ public class Auth {
     private static final String last_data = "https://api.owencloud.ru/v1/parameters/last-data";
     HttpHeaders headers = new HttpHeaders();
 
-    private static final Integer PLC_COUNT = 0;
     @Autowired
     private DevToDTO devToDTO;
 
@@ -115,7 +114,7 @@ public class Auth {
     /**
      * Получение информации об подлюченных датчиках к ПЛК
      */
-    @Scheduled(initialDelay = 60100)
+    @Scheduled(fixedRate = 60000)
     public void getDeviceInfo() {
         if (!headers.isEmpty()) {
 
