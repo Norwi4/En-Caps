@@ -16,12 +16,20 @@ public class DeviceRepository {
     private JdbcTemplate jdbcTemplate;
 
     public List<ParametersDTO> getLastData() {
-        return jdbcTemplate.query("SELECT * FROM (SELECT * FROM parameters ORDER BY id DESC LIMIT 29) t ORDER BY id", BeanPropertyRowMapper.newInstance(ParametersDTO.class));
+        return jdbcTemplate.query("SELECT parameters.device_id,\n" +
+                "       parameters.value,\n" +
+                "       d.name\n" +
+                "FROM (SELECT * FROM parameters ORDER BY id DESC LIMIT 29) as parameters\n" +
+                "         LEFT JOIN device d on d.device_id = parameters.device_id\n", BeanPropertyRowMapper.newInstance(ParametersDTO.class));
     }
 
     public List<ParametersDTO> getLastDataFailure() {
         return jdbcTemplate.query(
-                "SELECT * FROM (SELECT * FROM failure ORDER BY id DESC LIMIT 21) t ORDER BY id",
+                "SELECT failure.device_id,\n" +
+                        "       failure.value,\n" +
+                        "       d.name\n" +
+                        "FROM (SELECT * FROM failure ORDER BY id DESC LIMIT 21) as failure\n" +
+                        "         LEFT JOIN device d on d.device_id = failure.device_id",
                 BeanPropertyRowMapper.newInstance(ParametersDTO.class)
         );
     }
