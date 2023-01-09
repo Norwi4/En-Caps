@@ -1,5 +1,6 @@
 package com.javainuse.systemAPI.service;
 
+import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.repository.DeviceRepository;
@@ -14,10 +15,10 @@ public class DeviceService {
     @Autowired
     DeviceRepository deviceRepository;
 
-    public List<ParametersDTO> getLastData() {
+    public List<parameterDAO> getLastData() {
         return deviceRepository.getLastData();
     }
-    public List<ParametersDTO> getLastDataFailure() {
+    public List<parameterDAO> getLastDataFailure() {
         return deviceRepository.getLastDataFailure();
     }
 

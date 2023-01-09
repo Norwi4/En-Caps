@@ -1,5 +1,6 @@
 package com.javainuse.systemAPI.controller;
 
+import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.service.DeviceService;
@@ -24,9 +25,9 @@ public class DeviceController {
      * @return
      */
     @GetMapping("/last-data-sensor")
-    public ResponseEntity<List<ParametersDTO>> getLastDataSensor() {
+    public ResponseEntity<List<parameterDAO>> getLastDataSensor() {
         try {
-            List<ParametersDTO> devices = deviceService.getLastData();
+            List<parameterDAO> devices = deviceService.getLastData();
 
             if (devices.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -43,9 +44,9 @@ public class DeviceController {
      * @return
      */
     @GetMapping("/last-data-failure")
-    public ResponseEntity<List<ParametersDTO>> getLastDataFailure() {
+    public ResponseEntity<List<parameterDAO>> getLastDataFailure() {
         try {
-            List<ParametersDTO> devices = deviceService.getLastDataFailure();
+            List<parameterDAO> devices = deviceService.getLastDataFailure();
 
             if (devices.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

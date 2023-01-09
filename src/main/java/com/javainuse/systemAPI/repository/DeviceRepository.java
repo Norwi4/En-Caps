@@ -1,5 +1,6 @@
 package com.javainuse.systemAPI.repository;
 
+import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +16,22 @@ public class DeviceRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<ParametersDTO> getLastData() {
+    public List<parameterDAO> getLastData() {
         return jdbcTemplate.query("SELECT parameters.device_id,\n" +
                 "       parameters.value,\n" +
                 "       d.name\n" +
                 "FROM (SELECT * FROM parameters ORDER BY id DESC LIMIT 29) as parameters\n" +
-                "         LEFT JOIN device d on d.device_id = parameters.device_id\n", BeanPropertyRowMapper.newInstance(ParametersDTO.class));
+                "         LEFT JOIN device d on d.device_id = parameters.device_id\n", BeanPropertyRowMapper.newInstance(parameterDAO.class));
     }
 
-    public List<ParametersDTO> getLastDataFailure() {
+    public List<parameterDAO> getLastDataFailure() {
         return jdbcTemplate.query(
                 "SELECT failure.device_id,\n" +
                         "       failure.value,\n" +
                         "       d.name\n" +
                         "FROM (SELECT * FROM failure ORDER BY id DESC LIMIT 21) as failure\n" +
                         "         LEFT JOIN device d on d.device_id = failure.device_id",
-                BeanPropertyRowMapper.newInstance(ParametersDTO.class)
+                BeanPropertyRowMapper.newInstance(parameterDAO.class)
         );
     }
 
