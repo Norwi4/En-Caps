@@ -1,5 +1,6 @@
 package com.javainuse.systemAPI.controller;
 
+import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,12 @@ public class DeviceController {
     @Autowired
     DeviceService deviceService;
 
-    @GetMapping("/device")
-    public ResponseEntity<List<ParametersDTO>> getAllTutorials() {
+    /**
+     * Получение последних значений датчиков
+     * @return
+     */
+    @GetMapping("/last-data-sensor")
+    public ResponseEntity<List<ParametersDTO>> getLastDataSensor() {
         try {
             List<ParametersDTO> devices = deviceService.getLastData();
 
@@ -28,6 +33,43 @@ public class DeviceController {
             }
 
             return new ResponseEntity<>(devices, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Получение последних значений аварий
+     * @return
+     */
+    @GetMapping("/last-data-failure")
+    public ResponseEntity<List<ParametersDTO>> getLastDataFailure() {
+        try {
+            List<ParametersDTO> devices = deviceService.getLastDataFailure();
+
+            if (devices.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(devices, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Получение статуса плк
+     * @return
+     */
+    @GetMapping("/plc-status")
+    public ResponseEntity<PLC> getStatusPLC() {
+        try {
+            PLC plc = deviceService.getStatusPLC();
+
+            if (plc == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(plc, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

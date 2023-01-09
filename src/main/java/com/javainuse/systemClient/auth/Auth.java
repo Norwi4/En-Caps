@@ -11,12 +11,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 @Component
 public class Auth {
 
@@ -33,23 +35,29 @@ public class Auth {
     private static final String AUTHENTICATION_URL = "https://api.owencloud.ru/v1/auth/open";
     private static final String HELLO_URL = "https://api.owencloud.ru/v1/device/index";
     private static final String DEVICE_INFO = "https://api.owencloud.ru/v1/device/";
-
     private static final String last_data = "https://api.owencloud.ru/v1/parameters/last-data";
+    private static final String EVENT_LIST = "https://api.owencloud.ru/v1/company/event-registration";
+
     HttpHeaders headers = new HttpHeaders();
 
     @Autowired
     private DevToDTO devToDTO;
 
 
-    public void auth() {
+    /**
+     * Метод авторизации
+     * @param user
+     */
+    public void auth(User user) {
 
         try {
 
             // авторизация
             User authRequest = new User();
-            authRequest.setLogin("info@climatik.su");
-            authRequest.setPassword("vtntkm");
-            //ResponseToken authResponse = restTemplate.postForObject(AUTHENTICATION_URL, authRequest,  ResponseToken.class);
+
+            authRequest.setLogin(user.getLogin());
+            authRequest.setPassword(user.getPassword());
+
             ResponseEntity<ResponseToken> authResponse = restTemplate.exchange(
                     AUTHENTICATION_URL,
                     HttpMethod.POST,
@@ -57,14 +65,14 @@ public class Auth {
                     new ParameterizedTypeReference<ResponseToken>(){}
             );
 
-            //System.out.println(authResponse.getBody().getToken());
+            System.out.println(authResponse.getBody().getToken());
 
             plKrepo.saveChildCompanies(authResponse.getBody().getChildCompanies()); // сохранение подключенных компаний
 
             headers.add("Authorization", "Bearer " + authResponse.getBody().getToken());
-
+            getDeviceInfo();
         } catch (Exception ex) {
-            System.out.println("Вы не авторизованы");
+            System.out.println(ex);
 
         }
     }
@@ -106,7 +114,7 @@ public class Auth {
     public void error(List<PLC> PLCS) {
         for (PLC PLC : PLCS) {
             if (PLC.getStatus().equals("online")) {
-                System.out.println("ПЛК "+ PLC.getId() + " - онлайн");
+                System.out.println("ПЛК "+ PLC.getDevice_id() + " - онлайн");
             }
         }
     }
@@ -114,27 +122,27 @@ public class Auth {
     /**
      * Получение информации об подлюченных датчиках к ПЛК
      */
-    @Scheduled(fixedRate = 60000)
     public void getDeviceInfo() {
         if (!headers.isEmpty()) {
-
-            for (PLC plc : plKrepo.getPlcList()) {
-
+            try {
                 ResponseEntity<Device> res = restTemplate.exchange(
-                        DEVICE_INFO + plc.getId().toString(),
+                        DEVICE_INFO + "309227",
                         HttpMethod.POST,
-                        new HttpEntity<>( headers ),
-                        new ParameterizedTypeReference<Device>(){}
+                        new HttpEntity<>(headers),
+                        new ParameterizedTypeReference<Device>() {
+                        }
                 );
-
                 Device device = res.getBody();
                 deviceRepositoryPLC.saveSensor(device);
+            } catch (Exception ex) {
+                System.out.println(ex);
             }
-
         }
-
     }
 
+    /**
+     * Показатели датчиков
+     */
     @Scheduled(fixedRate = 60000)
     public void getValueFromDevice() {
 
@@ -145,11 +153,26 @@ public class Auth {
                     new HttpEntity<>("{\"ids\":[14783555,\n" +
                             "14783591,\n" +
                             "14783441,\n" +
+                            "15270225,\n" +
                             "14783435,\n" +
                             "14783465,\n" +
                             "14783573,\n" +
+                            "15448429,\n" +
                             "14784367,\n" +
+                            "15448423,\n" +
+                            "15448447,\n" +
+                            "15448411,\n" +
+                            "15448417,\n" +
+                            "15448399,\n" +
+                            "15448435,\n" +
+                            "15448405,\n" +
+                            "15448393,\n" +
+                            "15448441,\n" +
                             "14783525,\n" +
+                            "15270213,\n" +
+                            "15270219,\n" +
+                            "15270231,\n" +
+                            "15270237,\n" +
                             "14783501,\n" +
                             "14783639,\n" +
                             "14783603,\n" +
@@ -170,9 +193,97 @@ public class Auth {
                 deviceRepositoryPLC.save(deviceDTOS);
             }
 
-        } else {
-            auth();
-            getDeviceInfo();
         }
     }
+
+    /**
+     * Показатели аварий
+     */
+    @Scheduled(fixedRate = 60000)
+    public void getValueFromFailure() {
+
+        if (!headers.isEmpty()) {
+            ResponseEntity<List<Parameters>> result = restTemplate.exchange(
+                    last_data,
+                    HttpMethod.POST,
+                    new HttpEntity<>("{\"ids\":[15270243,\n" +
+                            "14783453,\n" +
+                            "14783627,\n" +
+                            "14783507,\n" +
+                            "14783609,\n" +
+                            "14965926,\n" +
+                            "14965932,\n" +
+                            "14783477,\n" +
+                            "14783537,\n" +
+                            "14783429,\n" +
+                            "14783543,\n" +
+                            "14783471,\n" +
+                            "14783585,\n" +
+                            "14783513,\n" +
+                            "14783459,\n" +
+                            "14783483,\n" +
+                            "14783549,\n" +
+                            "14783519,\n" +
+                            "14783489,\n" +
+                            "14783633,\n" +
+                            "14872886]}", headers ),
+                    new ParameterizedTypeReference<List<Parameters>>() {}
+            );
+
+            List<Parameters> rates = result.getBody();
+
+            ArrayList<ParametersDTO> deviceDTOS = new ArrayList<>();
+
+            for (Parameters device : rates) {
+                deviceDTOS.add(devToDTO.deviceDTO(device));
+            }
+            if (deviceDTOS != null) {
+                deviceRepositoryPLC.saveFailure(deviceDTOS);
+            }
+
+        }
+    }
+
+    /**
+     * Получение списка событий/аварий
+     * @return
+     */
+    public List<Events> eventsList(String body) {
+
+        ResponseEntity<List<Events>> result = restTemplate.exchange(
+                EVENT_LIST,
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                new ParameterizedTypeReference<List<Events>>() {
+                }
+        );
+
+        List<Events> rates = result.getBody();
+        try {
+            for (Events events : rates) {
+                if (events.getStart_dt() !=null) {
+                    events.setStart_dt(converterTime(events.getStart_dt()));
+                }
+                if (events.getEnd_dt() != null) {
+                    events.setEnd_dt(converterTime(events.getEnd_dt()));
+                }
+                if (events.getRead_dt() != null) {
+                    events.setRead_dt(converterTime(events.getRead_dt()));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        Collections.reverse(rates);
+        return rates;
+    }
+
+    public String converterTime(String time) {
+        long unixSeconds = Long.valueOf(time).longValue();
+        Date date = new java.util.Date(unixSeconds*1000L);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = sdf.format(date);
+        return formattedDate;
+    }
+
 }

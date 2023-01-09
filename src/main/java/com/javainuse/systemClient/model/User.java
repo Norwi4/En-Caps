@@ -1,8 +1,14 @@
 package com.javainuse.systemClient.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.NotNull;
+
 public class User {
 
+	@NotNull
 	private String login;
+	@NotNull
 	private String password;
 
 	public String getLogin() {

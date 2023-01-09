@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PLC {
     @JsonProperty("id")
-    private Long id;
+    private Long device_id;
 
     @JsonProperty("name")
     private String name;
@@ -23,12 +23,12 @@ public class PLC {
     @JsonProperty("status")
     private String status;
 
-    public Long getId() {
-        return id;
+    public Long getDevice_id() {
+        return device_id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDevice_id(Long device_id) {
+        this.device_id = device_id;
     }
 
     public String getName() {

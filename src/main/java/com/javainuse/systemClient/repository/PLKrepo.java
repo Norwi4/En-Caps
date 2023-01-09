@@ -23,7 +23,7 @@ public class PLKrepo {
     public void save(List<PLC> PLC, String company_id) {
         for (PLC PLC1 : PLC) {
             jdbcTemplate.update("INSERT INTO plc (company_id, device_id, name, type, status) VALUES(?,?,?,?, ?)",
-                    new Object[] {company_id, PLC1.getId(), PLC1.getName(), PLC1.getType(), PLC1.getStatus() });
+                    new Object[] {company_id, PLC1.getDevice_id(), PLC1.getName(), PLC1.getType(), PLC1.getStatus() });
         }
     }
 

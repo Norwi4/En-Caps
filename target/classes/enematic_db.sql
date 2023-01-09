@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `plc`;
 DROP TABLE IF EXISTS `parameters`;
 DROP TABLE IF EXISTS `device`;
 DROP TABLE IF EXISTS `companies`;
+DROP TABLE IF EXISTS `failure`;
 
 CREATE TABLE `plc`
 (
@@ -33,6 +34,19 @@ CREATE TABLE `device`
   DEFAULT CHARSET = utf8;
 
 CREATE TABLE `parameters`
+(
+    `id`         bigint(19) unsigned NOT NULL AUTO_INCREMENT,
+    `device_id`  bigint(19)          NOT NULL,
+    `timeInOven` varchar(255)        NOT NULL,
+    `value`      varchar(255)        NULL,
+    `codeError`  varchar(255)        NOT NULL,
+    `format`     varchar(255)        NOT NULL,
+    `created_at` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE `failure`
 (
     `id`         bigint(19) unsigned NOT NULL AUTO_INCREMENT,
     `device_id`  bigint(19)          NOT NULL,

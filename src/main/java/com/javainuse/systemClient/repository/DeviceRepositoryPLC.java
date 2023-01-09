@@ -32,6 +32,21 @@ public class DeviceRepositoryPLC {
     }
 
     /**
+     * Сохранение значений датчиков
+     * @param deviceDTOS
+     */
+    public void saveFailure(List<ParametersDTO> deviceDTOS) {
+        for (ParametersDTO deviceDTO : deviceDTOS) {
+            jdbcTemplate.update("INSERT INTO failure (device_id, timeInOven, value, codeError, format) VALUES(?,?,?,?,?)",
+                    deviceDTO.getDevice_id(),
+                    deviceDTO.getTimeInOven(),
+                    deviceDTO.getValue(),
+                    deviceDTO.getCodeError(),
+                    deviceDTO.getFormat());
+        }
+    }
+
+    /**
      * Сохранение информации по приборам с определенного ПЛК
      * @param devices
      */
