@@ -69,6 +69,7 @@ public class Auth {
 
             plKrepo.saveChildCompanies(authResponse.getBody().getChildCompanies()); // сохранение подключенных компаний
 
+            headers.clear();
             headers.add("Authorization", "Bearer " + authResponse.getBody().getToken());
             getDeviceInfo();
         } catch (Exception ex) {

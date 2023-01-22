@@ -2,6 +2,7 @@ package com.javainuse.systemAPI.repository;
 
 import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
+import com.javainuse.systemClient.model.Sensor;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -16,6 +17,10 @@ public class DeviceRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Получение последних параметров
+     * @return
+     */
     public List<parameterDAO> getLastData() {
         return jdbcTemplate.query("SELECT parameters.device_id,\n" +
                 "       parameters.value,\n" +
@@ -24,6 +29,10 @@ public class DeviceRepository {
                 "         LEFT JOIN device d on d.device_id = parameters.device_id\n", BeanPropertyRowMapper.newInstance(parameterDAO.class));
     }
 
+    /**
+     * Получение последних ошибок
+     * @return
+     */
     public List<parameterDAO> getLastDataFailure() {
         return jdbcTemplate.query(
                 "SELECT failure.device_id,\n" +
@@ -35,10 +44,25 @@ public class DeviceRepository {
         );
     }
 
+    /**
+     * Получение последних данных об ПЛК
+     * @return
+     */
     public PLC getStatusPLC() {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM (SELECT * FROM plc ORDER BY id DESC LIMIT 1) t ORDER BY id",
                 BeanPropertyRowMapper.newInstance(PLC.class)
+        );
+    }
+
+    /**
+     * Получение списка подключенных приборов к ПЛК (только параметров)
+     * @return
+     */
+    public List<Sensor> getDeviceList() {
+        return jdbcTemplate.query(
+                "SELECT * FROM device WHERE type='Параметр'",
+                BeanPropertyRowMapper.newInstance(Sensor.class)
         );
     }
 }

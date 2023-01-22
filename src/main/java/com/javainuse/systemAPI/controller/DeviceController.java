@@ -2,6 +2,7 @@ package com.javainuse.systemAPI.controller;
 
 import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
+import com.javainuse.systemClient.model.Sensor;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,20 @@ public class DeviceController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(plc, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/device-list")
+    public ResponseEntity<List<Sensor>> getDeviceList() {
+        try{
+            List<Sensor> sensors = deviceService.getDeviceList();
+
+            if (sensors == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(sensors, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
