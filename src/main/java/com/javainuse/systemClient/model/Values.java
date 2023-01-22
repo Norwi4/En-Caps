@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Values {
 
     @JsonProperty("d")
-    private Long timeInOven;
+    private String timeInOven;
 
     @JsonProperty("v")
     private String value;
@@ -18,11 +18,11 @@ public class Values {
     @JsonProperty("f")
     private String format;
 
-    public Long getTimeInOven() {
+    public String getTimeInOven() {
         return timeInOven;
     }
 
-    public void setTimeInOven(Long timeInOven) {
+    public void setTimeInOven(String timeInOven) {
         this.timeInOven = timeInOven;
     }
 

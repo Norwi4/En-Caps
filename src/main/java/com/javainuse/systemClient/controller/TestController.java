@@ -3,6 +3,7 @@ package com.javainuse.systemClient.controller;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.javainuse.systemClient.auth.Auth;
 import com.javainuse.systemClient.model.Events;
+import com.javainuse.systemClient.model.ParamGraph;
 import com.javainuse.systemClient.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -93,6 +94,17 @@ public class TestController {
         }
     }
 
+    @PostMapping("/parameters/data")
+    public ResponseEntity<List<ParamGraph>> getParamForGraph(@RequestBody String string){
+        try{
+            List<ParamGraph> param = auth.graphList(string);
 
-
+            if (param == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(param, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

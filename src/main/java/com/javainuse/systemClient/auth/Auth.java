@@ -37,12 +37,38 @@ public class Auth {
     private static final String DEVICE_INFO = "https://api.owencloud.ru/v1/device/";
     private static final String last_data = "https://api.owencloud.ru/v1/parameters/last-data";
     private static final String EVENT_LIST = "https://api.owencloud.ru/v1/company/event-registration";
-
+    private static final String DATA_PARAM = "https://api.owencloud.ru/v1/parameters/data";
     HttpHeaders headers = new HttpHeaders();
 
     @Autowired
     private DevToDTO devToDTO;
 
+    @Autowired
+    private DeviceRepositoryPLC repositoryPLC;
+
+
+    /**
+     * Получение значений для построения графика
+     * @param s строка с ids параметров, время старта и финиша отсчета
+     * @return получения значений нужных датчиков
+     */
+    public List<ParamGraph> graphList(String s) {
+        ResponseEntity<List<ParamGraph>> result = restTemplate.exchange(
+                DATA_PARAM,
+                HttpMethod.POST,
+                new HttpEntity<>(s, headers),
+                new ParameterizedTypeReference<List<ParamGraph>>() {
+                }
+        );
+
+        for (ParamGraph paramGraph : result.getBody()) {
+            for (Values values : paramGraph.getValues()) {
+                values.setTimeInOven(converterTime(values.getTimeInOven()));
+            }
+        }
+
+        return result.getBody();
+    }
 
     /**
      * Метод авторизации
@@ -68,7 +94,6 @@ public class Auth {
             System.out.println(authResponse.getBody().getToken());
 
             plKrepo.saveChildCompanies(authResponse.getBody().getChildCompanies()); // сохранение подключенных компаний
-
             headers.clear();
             headers.add("Authorization", "Bearer " + authResponse.getBody().getToken());
             getDeviceInfo();
@@ -125,18 +150,20 @@ public class Auth {
      */
     public void getDeviceInfo() {
         if (!headers.isEmpty()) {
-            try {
-                ResponseEntity<Device> res = restTemplate.exchange(
-                        DEVICE_INFO + "309227",
-                        HttpMethod.POST,
-                        new HttpEntity<>(headers),
-                        new ParameterizedTypeReference<Device>() {
-                        }
-                );
-                Device device = res.getBody();
-                deviceRepositoryPLC.saveSensor(device);
-            } catch (Exception ex) {
-                System.out.println(ex);
+            if (!repositoryPLC.existDeviceList()) {
+                try {
+                    ResponseEntity<Device> res = restTemplate.exchange(
+                            DEVICE_INFO + "309227",
+                            HttpMethod.POST,
+                            new HttpEntity<>(headers),
+                            new ParameterizedTypeReference<Device>() {
+                            }
+                    );
+                    Device device = res.getBody();
+                    deviceRepositoryPLC.saveSensor(device);
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
             }
         }
     }

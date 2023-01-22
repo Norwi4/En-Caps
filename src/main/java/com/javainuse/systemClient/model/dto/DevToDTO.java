@@ -13,7 +13,7 @@ public class DevToDTO {
         deviceDTO.setDevice_id(device.getId());
 
         Values values = device.getValues().get(0);
-        deviceDTO.setTimeInOven(new java.util.Date( (long)values.getTimeInOven()*1000 ));
+        deviceDTO.setTimeInOven(new java.util.Date( Long.valueOf(values.getTimeInOven())*1000) );
         deviceDTO.setValue(values.getValue());
         deviceDTO.setCodeError(values.getCodeError());
         deviceDTO.setFormat(values.getFormat());

@@ -67,4 +67,14 @@ public class DeviceRepositoryPLC {
                     type);
         }
     }
+
+    /**
+     * Проверка существования таблицы device
+     * @return
+     */
+    public Boolean existDeviceList() {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT * FROM device)",
+                Boolean.class);
+    }
 }

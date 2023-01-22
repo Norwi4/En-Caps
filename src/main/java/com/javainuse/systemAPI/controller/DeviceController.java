@@ -2,15 +2,14 @@ package com.javainuse.systemAPI.controller;
 
 import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
+import com.javainuse.systemClient.model.ParamGraph;
 import com.javainuse.systemClient.model.Sensor;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -77,6 +76,10 @@ public class DeviceController {
         }
     }
 
+    /**
+     * Получение списка приборов, подключенных к ПЛК
+     * @return
+     */
     @GetMapping("/device-list")
     public ResponseEntity<List<Sensor>> getDeviceList() {
         try{
@@ -90,5 +93,7 @@ public class DeviceController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }
