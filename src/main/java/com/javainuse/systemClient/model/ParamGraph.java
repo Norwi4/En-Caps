@@ -10,16 +10,16 @@ import java.util.List;
 public class ParamGraph {
 
     @JsonProperty("id")
-    private String id;
+    private String device_id;
     @JsonProperty("values")
     private List<Values> values;
 
     public String getId() {
-        return id;
+        return device_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String device_id) {
+        this.device_id = device_id;
     }
 
     public List<Values> getValues() {

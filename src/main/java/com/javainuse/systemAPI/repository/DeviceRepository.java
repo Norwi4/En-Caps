@@ -3,6 +3,7 @@ package com.javainuse.systemAPI.repository;
 import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.Sensor;
+import com.javainuse.systemClient.model.deviceList;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -59,10 +60,10 @@ public class DeviceRepository {
      * Получение списка подключенных приборов к ПЛК (только параметров)
      * @return
      */
-    public List<Sensor> getDeviceList() {
+    public List<deviceList> getDeviceList() {
         return jdbcTemplate.query(
-                "SELECT * FROM device WHERE type='Параметр'",
-                BeanPropertyRowMapper.newInstance(Sensor.class)
+                "SELECT * FROM device",
+                BeanPropertyRowMapper.newInstance(deviceList.class)
         );
     }
 }

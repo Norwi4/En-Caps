@@ -4,6 +4,7 @@ import com.javainuse.systemAPI.dao.parameterDAO;
 import com.javainuse.systemClient.model.PLC;
 import com.javainuse.systemClient.model.ParamGraph;
 import com.javainuse.systemClient.model.Sensor;
+import com.javainuse.systemClient.model.deviceList;
 import com.javainuse.systemClient.model.dto.ParametersDTO;
 import com.javainuse.systemAPI.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,9 @@ public class DeviceController {
      * @return
      */
     @GetMapping("/device-list")
-    public ResponseEntity<List<Sensor>> getDeviceList() {
+    public ResponseEntity<List<deviceList>> getDeviceList() {
         try{
-            List<Sensor> sensors = deviceService.getDeviceList();
+            List<deviceList> sensors = deviceService.getDeviceList();
 
             if (sensors == null) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
